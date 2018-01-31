@@ -61,8 +61,10 @@ module Milia
 
   def set_confirmable()
     original_token = params[:confirmation_token]
-    confirmation_token = Devise.token_generator.digest(User, :confirmation_token, original_token)
-    @confirmable = User.find_or_initialize_with_error_by(:confirmation_token, confirmation_token)
+    unless @confirmable
+      confirmation_digest = Devise.token_generator.digest(self, :confirmation_token, original_token)
+      @confirmable = User.find_or_initialize_with_error_by(:confirmation_token, confirmation_digest)
+    end
   end
 
   def user_params()
